@@ -1,0 +1,7 @@
+.venv
+__pycache__
+*.pyc
+.env
+test_sample.wav
+*.log
+benchmark_ram.py

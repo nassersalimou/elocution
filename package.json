@@ -1,0 +1,28 @@
+{
+  "name": "eloquence-coach",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node ./node_modules/vite/bin/vite.js",
+    "build": "node ./node_modules/vite/bin/vite.js build",
+    "test": "node tests/core.test.js",
+    "test:ai": "C:\\Users\\couco\\eloquence-ai-venv\\Scripts\\python.exe local-ai/test_ai_engine.py",
+    "test:coach": "C:\\Users\\couco\\eloquence-ai-venv\\Scripts\\python.exe local-ai/test_coach.py",
+    "ai": "C:\\Users\\couco\\eloquence-ai-venv\\Scripts\\python.exe local-ai/server.py",
+    "lint": "node ./node_modules/oxlint/bin/oxlint",
+    "preview": "node ./node_modules/vite/bin/vite.js preview"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "oxlint": "^1.79.0",
+    "vite": "^8.2.2"
+  }
+}

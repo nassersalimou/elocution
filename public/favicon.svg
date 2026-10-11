@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="ec" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C4B5FD" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="7.25" stroke="#8B5CF6" stroke-opacity="0.4" stroke-width="1.5" fill="none"/>
+  <!-- Vectorized EC Monogram for pixel-perfect rendering across all OS & browsers -->
+  <!-- Letter E -->
+  <path d="M7 9.5 h8.5 v2.5 H10 v2.2 h4.8 v2.3 H10 v2.5 h5.8 v2.5 H7 Z" fill="url(#ec)"/>
+  <!-- Letter C -->
+  <path d="M25 12.2 c-.8-1.7-2.4-2.7-4.5-2.7-3.2 0-5.5 2.5-5.5 6s2.3 6 5.5 6c2.1 0 3.7-1 4.5-2.7l-2.3-1.3c-.5.9-1.2 1.5-2.2 1.5-1.7 0-2.8-1.5-2.8-3.5s1.1-3.5 2.8-3.5c1 0 1.7.6 2.2 1.5 Z" fill="url(#ec)"/>
+  <!-- Audio Spark Accent -->
+  <circle cx="25.5" cy="8.5" r="2" fill="#A78BFA"/>
+</svg>
