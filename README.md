@@ -44,8 +44,8 @@ L'IA a un coût réel, c'est pourquoi elle est protégée par un code.
 
 ### 📩 Tu veux essayer l'IA ?
 
-**[Envoie-moi un message ici](https://github.com/nassersalimou/elocution/issues/new?title=Demande%20de%20code%20d%27acc%C3%A8s%20IA&body=Bonjour%2C%20j%27aimerais%20essayer%20la%20version%20IA%20de%20%26locution.%0A%0AComment%20te%20contacter%20%3A%20)**
-(un compte GitHub gratuit suffit), en indiquant comment te recontacter. Le code te sera transmis en privé.
+**✉️ Écris-moi : [coucou.sayen@gmail.com](mailto:coucou.sayen@gmail.com?subject=Demande%20de%20code%20d%27acc%C3%A8s%20IA%20-%20%26locution)**
+Je te réponds avec le code d'accès.
 
 Une fois le code reçu : **Réglages → Code d'accès IA → Enregistrer**, puis choisis **Assistant IA** dans un jeu.
 
