@@ -7,11 +7,13 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# ctranslate2 est fige en 3.24 pour Windows ; sous Linux on laisse faster-whisper choisir
+RUN grep -v '^ctranslate2' requirements.txt > requirements-docker.txt && \
+    pip install --no-cache-dir -r requirements-docker.txt
 
 COPY . .
 
-# Pré-télécharger le modèle Whisper base au build pour éviter un démarrage lent
+# PrÃ©-tÃ©lÃ©charger le modÃ¨le Whisper base au build pour Ã©viter un dÃ©marrage lent
 RUN python -c "from faster_whisper import WhisperModel; WhisperModel('base', device='cpu', compute_type='int8')"
 
 ENV ELOCUTION_DATA_DIR=/tmp/elocution PYTHONUNBUFFERED=1
