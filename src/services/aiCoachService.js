@@ -5,22 +5,29 @@ const COACH_MODES_KEY = 'elocution-coach-modes';
 // Bilans en Gemini Pro (~15-25 s, jusqu'à 40 s par modèle côté serveur, 75 s au total).
 const BILAN_TIMEOUT_MS = 90000;
 
-export async function isCoachAvailable() {
+// 'ok' | 'code' (code d'accès manquant ou faux) | 'offline'
+// 15 s : le serveur en ligne (Cloud Run) met quelques secondes à se réveiller.
+export async function getCoachStatus() {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(`${COACH_ENDPOINT}/status`, {
       headers: aiHeaders(),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
-    if (!res.ok) return false;
+    if (res.status === 401) return 'code';
+    if (!res.ok) return 'offline';
     const data = await res.json();
-    return Boolean(data.available);
+    return data.available ? 'ok' : 'offline';
   } catch {
     clearTimeout(timeoutId);
-    return false;
+    return 'offline';
   }
+}
+
+export async function isCoachAvailable() {
+  return (await getCoachStatus()) === 'ok';
 }
 
 async function post(path, body, timeoutMs = 45000) {

@@ -1,135 +1,139 @@
+<div align="center">
+
 # &locution
 
 **Entraîne ta pensée. Trouve tes mots. Parle avec impact.**
 
-Application web d'entraînement à l'expression orale, 100 % locale — sans API, sans LLM, sans serveur backend.
+### 👉 [**OUVRIR L'APPLICATION**](https://nassersalimou.github.io/elocution/) 👈
 
-![&locution](public/favicon.svg)
+**https://nassersalimou.github.io/elocution/**
 
-## Objectifs
+Gratuit · rien à installer · fonctionne dans Chrome ou Edge, sur ordinateur
 
-&locution aide à développer :
+</div>
 
-- la rapidité de réflexion sous pression ;
-- la structuration des idées ;
-- le vocabulaire actif ;
-- la conscience de sa propre voix ;
-- la capacité à répondre spontanément.
+---
 
-## Fonctionnalités
+## C'est quoi ?
 
-### 4 jeux d'entraînement
+&locution est une application d'entraînement à l'**expression orale**, en français.
+On y travaille, par petits exercices chronométrés :
 
-| Jeu | Description |
-|-----|-------------|
-| **Réflexe Débat** | Réflexion puis réponse orale avec timers progressifs, enregistrement micro, auto-évaluation |
-| **Sprint Vocabulaire** | Synonymes, antonymes, champs lexicaux, reformulation — 60 secondes chrono |
-| **Miroir Vocal** | Parle, écoute, identifie tes défauts, refais une prise et compare |
-| **Construis ta pensée** | Transforme des idées brutes en réponse structurée |
+- la **rapidité de réflexion** sous pression (débat, entretien, imprévu) ;
+- la **structure** des idées ;
+- le **vocabulaire** actif ;
+- la **diction** et le débit ;
+- la **conscience de sa propre voix**.
 
-### Système de progression
+Tu parles dans ton micro, tu t'écoutes, tu progresses : XP, niveaux, séries quotidiennes et badges.
 
-- XP et niveaux (Novice → Légende)
-- Série quotidienne (streak)
-- Badges débloquables
-- Historique des sessions
-- Statistiques par compétence
+## 🤖 Version avec IA : sur code d'accès
 
-### Session rapide — 5 minutes
+L'application a deux modes dans chaque jeu :
 
-Enchaînement automatique : 1 débat + 1 clarté + 1 miroir + 1 vocabulaire.
+| | **Mode manuel** | **Mode Assistant IA** |
+|---|---|---|
+| Accès | ✅ Libre, pour tout le monde | 🔑 Sur **code d'accès** |
+| Jeux, chronos, enregistrement de la voix | ✅ | ✅ |
+| Retours | Auto-évaluation guidée | Bilan personnalisé de ta réponse (arguments, clarté, exemples) |
+| Adversaire de débat | Arguments préparés | Un adversaire IA qui **répond à ce que tu viens de dire** |
+| Voix | Voix du navigateur | Voix HD Google, très claire |
+| Transcription de ce que tu dis | — | ✅ (y compris les « euh ») |
 
-## Technologies
+L'IA a un coût réel, c'est pourquoi elle est protégée par un code.
 
-- **React 19** + **Vite 8**
-- **React Router** pour la navigation
-- **localStorage** pour la persistance
-- **MediaRecorder API** pour l'enregistrement vocal
-- **Speech Synthesis API** pour la lecture à voix haute
-- CSS moderne (variables, glassmorphism, animations)
+### 📩 Tu veux essayer l'IA ?
 
-## Installation
+**[Envoie-moi un message ici](https://github.com/nassersalimou/elocution/issues/new?title=Demande%20de%20code%20d%27acc%C3%A8s%20IA&body=Bonjour%2C%20j%27aimerais%20essayer%20la%20version%20IA%20de%20%26locution.%0A%0AComment%20te%20contacter%20%3A%20)**
+(un compte GitHub gratuit suffit), en indiquant comment te recontacter. Le code te sera transmis en privé.
 
-### Prérequis
+Une fois le code reçu : **Réglages → Code d'accès IA → Enregistrer**, puis choisis **Assistant IA** dans un jeu.
 
-- Node.js 18+
-- npm
+---
 
-### Commandes (Windows)
+## 📸 Aperçu
 
-```powershell
-cd "G:\Mon Drive\projet\elocution"
+### Accueil
+Ton tableau de bord : niveau, XP, série de jours, et accès direct aux entraînements.
+
+![Accueil](docs/captures/accueil.png)
+
+### Les entraînements
+Sept jeux, plus une **session rapide de 5 minutes** qui en enchaîne quatre.
+
+![Entraînement](docs/captures/entrainement.png)
+
+### Réflexe Débat
+Un sujet, un temps de réflexion, puis tu réponds à l'oral. Les chronos raccourcissent à chaque manche.
+Dix thèmes (débat, entretien d'embauche, pitch, culture générale…), quatre niveaux de difficulté et plus de 450 sujets.
+En mode IA, un adversaire te répond à l'oral et tu dois lui répliquer.
+
+![Réflexe Débat](docs/captures/debat.png)
+
+### Duel contradictoire
+Tu choisis un sujet et ton camp, puis tu défends ta position face à un contradicteur qui attaque **tes** arguments.
+
+![Duel contradictoire](docs/captures/duel.png)
+
+### Explique à deux publics
+Le même concept à expliquer à deux personnes très différentes : un enfant puis un expert, par exemple.
+
+![Explique à deux publics](docs/captures/explique.png)
+
+### Répète la phrase
+Diction et rapidité : écoute une phrase, répète-la sans erreur avant la fin du temps. Dix niveaux, de plus en plus rapides.
+
+![Répète la phrase](docs/captures/repete.png)
+
+### Miroir Vocal
+Une mission (« explique en 45 secondes comment tu gères le stress »), tu t'enregistres, tu t'écoutes, tu refais une prise et tu compares.
+
+![Miroir Vocal](docs/captures/miroir.png)
+
+### Sprint Vocabulaire
+60 secondes de synonymes, contraires, champs lexicaux et reformulations.
+
+![Sprint Vocabulaire](docs/captures/vocabulaire.png)
+
+### Construis ta pensée
+Des idées en vrac à transformer en réponse structurée.
+
+![Construis ta pensée](docs/captures/clarte.png)
+
+### Progression
+Statistiques par compétence, temps d'entraînement et badges à débloquer.
+
+![Progression](docs/captures/progression.png)
+
+### Réglages
+Choix de la voix (femme ou homme, vitesse) et **code d'accès IA**.
+
+![Réglages](docs/captures/reglages.png)
+
+---
+
+## 🔒 Vie privée
+
+- Ta progression est enregistrée **uniquement dans ton navigateur** : pas de compte, pas d'inscription.
+- En mode manuel, tes enregistrements restent sur ton ordinateur.
+- En mode IA, ce que tu dis est envoyé au serveur IA le temps de l'analyse, pour produire ton bilan.
+
+## 💡 Conseils
+
+- Autorise le **micro** quand le navigateur le demande.
+- Utilise **Chrome ou Edge** sur ordinateur, avec un casque si possible.
+- Chaque bouton 🔊 **Écouter** lit le texte à voix haute (pratique pour les personnes malvoyantes).
+
+---
+
+## 🛠️ Pour les développeurs
+
+Site : React 19 + Vite. Serveur IA : Python (FastAPI), Gemini sur Vertex AI, voix Google Text-to-Speech, Whisper pour l'analyse du débit. Hébergement : GitHub Pages (site) + Google Cloud Run (IA).
+
+```bash
 npm install
-npm run dev
+npm run dev        # site sur http://localhost:5173
+npm test           # tests unitaires
 ```
 
-Ouvre [http://localhost:5173](http://localhost:5173) dans ton navigateur.
-
-### Tests unitaires
-
-```powershell
-npm test
-```
-
-### Build production
-
-```powershell
-npm run build
-npm run preview
-```
-
-## Architecture
-
-```
-src/
-├── components/       # UI réutilisable (layout, timers, waveform, audio)
-├── pages/            # Dashboard, progression, historique, réglages, onboarding
-├── games/
-│   ├── debate/       # Réflexe Débat
-│   ├── vocabulary/   # Sprint Vocabulaire
-│   ├── vocalMirror/  # Miroir Vocal
-│   └── clarity/      # Construis ta pensée
-├── hooks/            # useTimer, useAudioRecorder, useProfile
-├── services/
-│   ├── storageService.js    # Gestion centralisée du localStorage
-│   ├── audioService.js      # MediaRecorder & cycle de vie des enregistrements
-│   ├── speechService.js     # Speech Synthesis
-│   ├── progressService.js   # Niveaux XP, streak, badges
-│   └── feedbackEngine.js    # Provider pattern (LocalRuleFeedbackProvider, FutureLocalAIProvider)
-├── data/             # Questions (+130), vocabulaire (+180), règles de feedback, badges
-├── utils/            # Analyse texte, dates, adaptation difficulté, XP
-└── tests/            # Suite de tests unitaires automatisés
-```
-
-Le fichier `src/services/feedbackEngine.js` implémente le pattern Provider (`FeedbackProvider`, `LocalRuleFeedbackProvider`, `FutureLocalAIProvider`) : aujourd'hui `LocalRuleFeedbackProvider` est actif et fournit des conseils déterministes 100 % locaux. Demain, un provider local (ex: Whisper local + LLM local) pourra être branché sans refonte de l'application.
-
-## Limites actuelles
-
-- Pas de transcription automatique de la voix
-- Pas de détection automatique des hésitations ou du débit
-- Feedback basé sur des règles et auto-évaluations (pas d'analyse sémantique)
-- Données stockées uniquement dans le navigateur local
-- Microphone requis pour les jeux vocaux (fonctionne sans micro, avec dégradation gracieuse)
-
-## Roadmap
-
-### Version actuelle — 100 % locale
-
-- [x] 4 jeux fonctionnels
-- [x] Progression XP / badges / streak
-- [x] Session rapide 5 minutes
-- [x] Design premium sombre responsive
-
-### Version future
-
-- [ ] Transcription automatique (Web Speech API ou Whisper local)
-- [ ] Détection automatique des hésitations et silences
-- [ ] Analyse du débit et de l'intonation
-- [ ] Coach conversationnel par LLM
-- [ ] Débats IA en temps réel
-- [ ] Feedback personnalisé par IA
-- [ ] Synthèse vocale améliorée
-
-## Licence
-
-Projet personnel — libre d'utilisation pour l'entraînement et le portfolio.
+Le serveur IA (`local-ai/`) tourne en local sur le port 8765 si aucune adresse `VITE_AI_URL` n'est définie. Il a besoin de ses propres identifiants Google Cloud (fichier `local-ai/.env`, non publié).

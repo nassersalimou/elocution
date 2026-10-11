@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
-import { isCoachAvailable, getCoachMode, setCoachMode } from '../../services/aiCoachService';
+import { getCoachStatus, getCoachMode, setCoachMode } from '../../services/aiCoachService';
 
 export function CoachModeToggle({ gameId, value, onChange }) {
-  const [available, setAvailable] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [status, setStatus] = useState(null);
+  const available = status === 'ok';
+  const checking = status === null;
 
   const currentMode = value !== undefined ? value : getCoachMode(gameId);
 
   useEffect(() => {
     let isMounted = true;
-    isCoachAvailable().then((isAvail) => {
-      if (isMounted) {
-        setAvailable(isAvail);
-        setChecking(false);
-      }
+    getCoachStatus().then((s) => {
+      if (isMounted) setStatus(s);
     });
     return () => {
       isMounted = false;
@@ -58,9 +56,14 @@ export function CoachModeToggle({ gameId, value, onChange }) {
           Assistant IA
         </button>
       </div>
-      {!checking && !available && (
+      {status === 'code' && (
         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-          Coach IA hors ligne : lance le serveur IA (npm run ai).
+          Assistant IA réservé : entre le code d'accès dans Réglages (demande-le à l'auteur de l'application).
+        </span>
+      )}
+      {status === 'offline' && (
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+          Coach IA hors ligne pour le moment : le mode manuel reste disponible.
         </span>
       )}
     </div>
