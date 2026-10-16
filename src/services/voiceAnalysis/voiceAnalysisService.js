@@ -1,5 +1,5 @@
 import { LocalVoiceAnalysisProvider } from './LocalVoiceAnalysisProvider.js';
-import { AI_BASE, aiHeaders } from '../apiConfig.js';
+import { AI_BASE, aiHeaders, notifyCodeRejected } from '../apiConfig.js';
 
 let activeProvider = new LocalVoiceAnalysisProvider();
 
@@ -63,6 +63,14 @@ export async function transcribeRecording(audioBlob) {
     formData.append('file', audioBlob, `reponse.${ext}`);
     const res = await fetch(TRANSCRIBE_ENDPOINT, { method: 'POST', headers: aiHeaders(), body: formData, signal: controller.signal });
     clearTimeout(timeoutId);
+    if (res.status === 401) {
+      notifyCodeRejected();
+      return {
+        success: false,
+        isAvailable: true,
+        error: "Code d'accès IA manquant ou incorrect : va dans Réglages.",
+      };
+    }
     if (res.ok) {
       const data = await res.json();
       if (data?.text && data.text.trim()) {

@@ -10,6 +10,24 @@ export function getAccessCode() {
   }
 }
 
+// Événements pour le bandeau d'alerte « code d'accès IA » (voir AppLayout).
+export const CODE_REJECTED_EVENT = 'elocution-code-rejected';
+export const CODE_SAVED_EVENT = 'elocution-code-saved';
+
+function emit(name) {
+  try {
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(name));
+  } catch {
+    /* ignore */
+  }
+}
+
+// À appeler quand le serveur IA répond 401 : sans ça, la voix HD, la transcription
+// et le coach tombent en panne sans que l'utilisateur comprenne pourquoi.
+export function notifyCodeRejected() {
+  emit(CODE_REJECTED_EVENT);
+}
+
 export function setAccessCode(code) {
   try {
     if (typeof localStorage !== 'undefined') {
@@ -18,6 +36,7 @@ export function setAccessCode(code) {
   } catch {
     /* ignore */
   }
+  emit(CODE_SAVED_EVENT);
 }
 
 export function aiHeaders(extra = {}) {

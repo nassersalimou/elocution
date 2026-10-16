@@ -69,7 +69,10 @@ export function VoiceAnalysisReport({ audioBlob, onAnalysisComplete }) {
               Analyse vocale locale indisponible
             </p>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Le serveur Whisper local n'est pas démarré. Ta réponse reste parfaitement enregistrée et tu peux continuer ton entraînement normalement.
+              {error && error.startsWith("Code d'accès")
+                ? `${error} `
+                : "Le serveur d'analyse n'est pas joignable. "}
+              Ta réponse reste parfaitement enregistrée et tu peux continuer ton entraînement normalement.
             </p>
             {audioBlob && (
               <button

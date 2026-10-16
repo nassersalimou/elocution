@@ -1,4 +1,4 @@
-import { AI_BASE, aiHeaders } from './apiConfig.js';
+import { AI_BASE, aiHeaders, notifyCodeRejected } from './apiConfig.js';
 
 // Lecture à voix haute : voix HD Google (serveur local /coach/tts, mise en cache)
 // en priorité, voix du navigateur en secours (serveur éteint, quota gratuit atteint…).
@@ -94,6 +94,7 @@ async function fetchHdAudio(text, prefs) {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
+    if (res.status === 401) notifyCodeRejected();
     if (!res.ok) return null;
     return await res.blob();
   } catch {

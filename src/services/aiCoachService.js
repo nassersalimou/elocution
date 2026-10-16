@@ -1,4 +1,4 @@
-import { AI_BASE, aiHeaders } from './apiConfig';
+import { AI_BASE, aiHeaders, notifyCodeRejected } from './apiConfig';
 import { fitTranscript, detailToText } from '../utils/textLimits';
 
 const COACH_ENDPOINT = `${AI_BASE}/coach`;
@@ -17,7 +17,10 @@ export async function getCoachStatus() {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
-    if (res.status === 401) return 'code';
+    if (res.status === 401) {
+      notifyCodeRejected();
+      return 'code';
+    }
     if (!res.ok) return 'offline';
     const data = await res.json();
     return data.available ? 'ok' : 'offline';
@@ -64,6 +67,7 @@ async function post(path, body, timeoutMs = 45000) {
   clearTimeout(timeoutId);
 
   if (res.status === 401) {
+    notifyCodeRejected();
     return {
       ok: false,
       reason: 'unauthorized',
@@ -271,6 +275,7 @@ export async function voiceFeedback({
   clearTimeout(timeoutId);
 
   if (res.status === 401) {
+    notifyCodeRejected();
     return {
       ok: false,
       reason: 'unauthorized',
@@ -369,6 +374,7 @@ export async function duelTurnAudio({
   clearTimeout(timeoutId);
 
   if (res.status === 401) {
+    notifyCodeRejected();
     return {
       ok: false,
       reason: 'unauthorized',

@@ -1,5 +1,5 @@
 import { VoiceAnalysisProvider } from './VoiceAnalysisProvider.js';
-import { AI_BASE, aiHeaders } from '../apiConfig.js';
+import { AI_BASE, aiHeaders, notifyCodeRejected } from '../apiConfig.js';
 
 const LOCAL_AI_ENDPOINT = AI_BASE;
 
@@ -53,6 +53,10 @@ export class LocalVoiceAnalysisProvider extends VoiceAnalysisProvider {
       body: formData,
     });
 
+    if (res.status === 401) {
+      notifyCodeRejected();
+      throw new Error("Code d'accès IA manquant ou incorrect : va dans Réglages.");
+    }
     if (!res.ok) {
       const errDetail = await res.text().catch(() => '');
       throw new Error(`Erreur serveur vocal (${res.status}): ${errDetail || 'Échec de la transcription'}`);
