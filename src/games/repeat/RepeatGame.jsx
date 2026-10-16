@@ -17,6 +17,11 @@ import {
 import { awardXp } from '../../services/progressService';
 import useAudioRecorder from '../../hooks/useAudioRecorder';
 import useTimer from '../../hooks/useTimer';
+import audioRecorder from '../../services/audioService';
+import { createVoiceActivityMonitor } from '../../utils/speechActivity';
+
+// Au-delà de la limite de temps, on coupe de toute façon après ce délai (s).
+const HARD_STOP_GRACE_SECONDS = 8;
 
 export function RepeatGame({ quickMode = false, onComplete }) {
   const navigate = useNavigate();
@@ -43,6 +48,20 @@ export function RepeatGame({ quickMode = false, onComplete }) {
   const recordStartRef = useRef(0);
   const hasFinishedRef = useRef(false);
 
+  // Détection de fin de parole : l'audio décide quand c'est fini et combien de temps on a mis.
+  const stopMonitorRef = useRef(null);
+  const hardStopRef = useRef(null);
+  const speechRef = useRef({ startAt: null, lastVoiceAt: null });
+  const finishingRef = useRef(false);
+  const finishRef = useRef(null);
+
+  const stopMonitor = useCallback(() => {
+    if (stopMonitorRef.current) stopMonitorRef.current();
+    stopMonitorRef.current = null;
+    if (hardStopRef.current) clearTimeout(hardStopRef.current);
+    hardStopRef.current = null;
+  }, []);
+
   // Audio & Micro
   const { isRecording, startRecording, stopRecording, error: micError, cleanup: cleanupMic } = useAudioRecorder();
 
@@ -51,9 +70,10 @@ export function RepeatGame({ quickMode = false, onComplete }) {
     sessionStartRef.current = Date.now();
     return () => {
       stopSpeaking();
+      stopMonitor();
       cleanupMic();
     };
-  }, [cleanupMic]);
+  }, [cleanupMic, stopMonitor]);
 
   const currentPhrase = phrases[currentIndex] || null;
   const currentLimit = currentPhrase ? timeLimitFor(currentPhrase.text, currentPhrase.level) : 5;
@@ -64,16 +84,27 @@ export function RepeatGame({ quickMode = false, onComplete }) {
   // Démarrer l'enregistrement vocal
   const handleStartRecording = useCallback(async () => {
     stopSpeaking();
+    stopMonitor();
+    finishingRef.current = false;
+    speechRef.current = { startAt: null, lastVoiceAt: null };
     recordStartRef.current = Date.now();
     setPhase('record');
     try {
       await startRecording();
+      // Coupe tout seul quand la voix s'arrête (ou, au pire, un peu après la limite de temps).
+      stopMonitorRef.current = createVoiceActivityMonitor(audioRecorder.activeStream, (info) => {
+        speechRef.current = { startAt: info.speechStartAt, lastVoiceAt: info.lastVoiceAt };
+        if (info.speechEnded && finishRef.current) finishRef.current();
+      });
+      hardStopRef.current = setTimeout(() => {
+        if (finishRef.current) finishRef.current();
+      }, (currentLimit + HARD_STOP_GRACE_SECONDS) * 1000);
     } catch {
       // Micro indisponible
     }
     timer.reset(currentLimit);
     timer.start();
-  }, [currentLimit, startRecording, timer]);
+  }, [currentLimit, startRecording, timer, stopMonitor]);
 
   // Écouter la phrase à voix haute
   const playCurrentPhrase = useCallback((text) => {
@@ -144,9 +175,16 @@ export function RepeatGame({ quickMode = false, onComplete }) {
 
   // Fin de prise de parole par l'utilisateur
   const handleFinishRecording = async () => {
+    if (finishingRef.current) return; // coupure automatique et clic sur « Terminer » en même temps
+    finishingRef.current = true;
+    stopMonitor();
     timer.pause();
     setPhase('transcribing');
-    const elapsedSeconds = (Date.now() - recordStartRef.current) / 1000;
+    // Le dernier instant où l'on a entendu la voix décide si la phrase était finie à temps ;
+    // sans voix détectée, on se rabat sur l'instant du clic.
+    const lastVoiceAt = speechRef.current.lastVoiceAt;
+    const spokenUntil = lastVoiceAt ?? Date.now();
+    const elapsedSeconds = (spokenUntil - recordStartRef.current) / 1000;
     const overTime = elapsedSeconds > currentLimit;
 
     let transcription = '';
@@ -200,6 +238,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
 
     setPhase('check');
   };
+  finishRef.current = handleFinishRecording;
 
   // Fin du jeu et attribution de l'XP
   const triggerEndGame = useCallback((finalPoints = points) => {
@@ -439,6 +478,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
           className="btn btn-ghost"
           onClick={() => {
             stopSpeaking();
+            stopMonitor();
             cleanupMic();
             navigate(-1);
           }}
@@ -527,7 +567,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
 
           {timer.seconds === 0 && (
             <div style={{ margin: '0.75rem 0', padding: '0.4rem 0.75rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--red)', borderRadius: 'var(--radius)', fontSize: '0.85rem', fontWeight: 700 }}>
-              ⏱️ Temps limite dépassé (+10 pts pénalité) ! Termine ta phrase.
+              ⏱️ Temps limite dépassé : si tu parles encore, +10 pts de pénalité. Termine ta phrase !
             </div>
           )}
 
@@ -536,6 +576,9 @@ export function RepeatGame({ quickMode = false, onComplete }) {
             <Waveform active={isRecording} />
             <span style={{ fontSize: '0.85rem', color: 'var(--red)', fontWeight: 600 }}>Répète la phrase à voix haute</span>
           </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '-0.5rem 0 1rem' }}>
+            L'enregistrement s'arrête tout seul quand tu as fini de parler.
+          </p>
 
           {micError && <p style={{ color: 'var(--red)', fontSize: '0.85rem', marginBottom: '1rem' }}>{micError}</p>}
 

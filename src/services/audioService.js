@@ -106,6 +106,11 @@ class AudioRecorderService {
     this.chunks = [];
   }
 
+  // Flux micro en cours (pour mesurer le niveau sonore pendant l'enregistrement).
+  get activeStream() {
+    return this.stream;
+  }
+
   get isRecording() {
     return this.mediaRecorder?.state === 'recording';
   }

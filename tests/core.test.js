@@ -46,6 +46,7 @@ import {
   getWeakTypes,
 } from '../src/utils/repeatScoring.js';
 import { fitTranscript, detailToText } from '../src/utils/textLimits.js';
+import { createSpeechTracker } from '../src/utils/speechActivity.js';
 import {
   REPEAT_PHRASES,
   PHRASE_TYPES,
@@ -656,6 +657,44 @@ test('detailToText aplatit les erreurs 422 de FastAPI en texte affichable', () =
     'String should have at most 6000 characters');
   assert.equal(detailToText(undefined), '');
   assert.equal(typeof detailToText({ a: 1 }), 'string');
+});
+
+// Joue une séquence [niveau, durée en ms] à 50 ms/pas et renvoie les événements.
+function playSpeech(sequence) {
+  const tracker = createSpeechTracker();
+  let now = 1000;
+  let endedAt = null;
+  let last;
+  for (const [level, ms] of sequence) {
+    for (let t = 0; t < ms; t += 50) {
+      now += 50;
+      last = tracker.update(level, now);
+      if (last.speechEnded && endedAt === null) endedAt = now;
+    }
+  }
+  return { endedAt, last, end: now };
+}
+
+test('détection de parole : coupe 1,4 s après la fin de la voix, mesure le dernier son', () => {
+  // 0,5 s de bruit de fond, 2 s de voix, puis silence
+  const r = playSpeech([[0.004, 500], [0.15, 2000], [0.004, 3000]]);
+  assert.ok(r.endedAt !== null, 'la fin de parole doit être détectée');
+  // La voix s'arrête vers 3500 ms ; la coupure tombe ~1,4 s plus tard
+  assert.ok(r.endedAt - r.last.lastVoiceAt >= 1400 && r.endedAt - r.last.lastVoiceAt <= 1500);
+  assert.ok(r.last.lastVoiceAt - r.last.speechStartAt >= 1900);
+});
+
+test('détection de parole : une courte hésitation ne coupe pas, le silence initial non plus', () => {
+  // 3 s de silence avant de parler : aucune coupure
+  const attente = playSpeech([[0.004, 3000]]);
+  assert.equal(attente.endedAt, null);
+  assert.equal(attente.last.speechStartAt, null);
+  // Hésitation d'une seconde au milieu de la phrase : pas de coupure pendant la pause
+  const pause = playSpeech([[0.004, 500], [0.15, 1000], [0.004, 1000], [0.15, 1000]]);
+  assert.equal(pause.endedAt, null);
+  // Un claquement bref (100 ms) ne compte pas comme de la parole
+  const clac = playSpeech([[0.004, 500], [0.2, 100], [0.004, 3000]]);
+  assert.equal(clac.last.speechStartAt, null);
 });
 
 test('la tolérance sur les mots proches baisse après le niveau 4', () => {
