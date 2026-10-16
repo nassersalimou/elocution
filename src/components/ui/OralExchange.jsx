@@ -8,6 +8,7 @@ import Waveform from '../../components/ui/Waveform';
 import ExtraTimeButton, { EXTRA_SECONDS } from './ExtraTimeButton';
 import HelpPanel from './HelpPanel';
 import ReadAloudButton from './ReadAloudButton';
+import AdversaryAvatar from './AdversaryAvatar';
 
 const REFLECTION_TIMES = {
   debutant: 20,
@@ -180,9 +181,10 @@ export function OralExchange({
     }
   }, [step, responseSeconds]);
 
+  // « Donner ma réponse » : on coupe la lecture et on enregistre tout de suite.
   const handleSkipSpeaking = () => {
     stopSpeaking();
-    setStep('thinking');
+    handleReadyToRecord();
   };
 
   const handleFallbackSubmit = () => {
@@ -236,10 +238,14 @@ export function OralExchange({
         </button>
       </div>
 
+      {/* L'adversaire en image : il parle pendant sa réplique, il réfléchit le reste du temps. */}
+      {['waiting', 'speaking', 'thinking', 'recording', 'transcribing'].includes(step) && (
+        <AdversaryAvatar key={step === 'speaking' ? 'speaking' : 'thinking'} mood={step === 'speaking' ? 'speaking' : 'thinking'} />
+      )}
+
       {/* Contenu selon l'étape */}
       {step === 'waiting' && (
-        <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚔️</div>
+        <div style={{ textAlign: 'center', padding: '0.5rem 1rem 1rem' }}>
           <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
             L'adversaire prépare sa réponse…
           </div>
@@ -286,7 +292,7 @@ export function OralExchange({
                 className="btn btn-secondary btn-sm"
                 onClick={handleSkipSpeaking}
               >
-                Passer la lecture ⏩
+                Donner ma réponse 🎙️
               </button>
             </div>
           )}
