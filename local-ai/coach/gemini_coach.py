@@ -1097,13 +1097,18 @@ L'utilisateur entend chaque phrase et doit la répéter fidèlement à voix haut
 
 Règles de progression :
 - La n-ième phrase (de 1 à {count}) doit être au niveau min(10, {start_level} + (n - 1) // 2) : le niveau monte d'un cran toutes les DEUX phrases.
-- Échelle de difficulté (progression douce, l'utilisateur débute) :
+- Échelle de difficulté (douce jusqu'au niveau 4, puis NETTEMENT plus dure) :
   * Niveau 1 = 4 à 6 mots très simples, sans piège de prononciation.
   * Niveau 3 = 8 à 10 mots, une petite difficulté (une liaison ou un son proche).
-  * Niveau 5 = 12 à 15 mots, rythme naturel.
-  * Niveau 7 = 16 à 20 mots, articulation plus exigeante.
-  * Niveau 10 = 22 à 28 mots, virelangues exigeants.
-  * Respecte STRICTEMENT ces longueurs : une phrase trop longue pour son niveau est une erreur.
+  * Niveau 4 = 11 à 15 mots, rythme naturel.
+  * Niveau 5 = 17 à 22 mots, une vraie difficulté (enchaînement de sons proches, nombre ou nom propre).
+  * Niveau 6 = 21 à 28 mots, deux difficultés cumulées.
+  * Niveau 7 = 25 à 33 mots, subordonnées enchaînées, articulation très exigeante.
+  * Niveau 8 = 28 à 36 mots, vocabulaire rare ou noms propres étrangers, rythme soutenu.
+  * Niveau 9 = 33 à 44 mots, phrase dense avec incises, listes et virelangue.
+  * Niveau 10 = 38 à 52 mots, extrêmement dense : virelangue, nombres écrits en lettres, noms propres et vocabulaire soutenu mêlés.
+  * Respecte ces longueurs : au niveau 5 et au-delà, une phrase trop courte ou trop simple pour son niveau est une erreur.
+  * Écris toujours les nombres et les dates EN TOUTES LETTRES (« mille neuf cent quatre-vingt-dix », jamais « 1990 »).
 - Types autorisés (chaque phrase doit avoir exactement un type parmi) : {allowed_types_str}.
 {weak_info}
 - Phrases naturelles, conçues pour être dites à l'oral, sans guillemets, ponctuation simple (points, virgules).
@@ -1180,7 +1185,9 @@ async def transcribe(file: UploadFile = File(...)) -> dict:
         "Pour cette tâche tu n'es PAS coach : tu es un transcripteur. "
         "Transcris mot à mot, en français, exactement ce qui est dit dans l'audio joint. "
         "Ne corrige rien, ne reformule rien, n'ajoute rien : garde les fautes, les répétitions "
-        "et les hésitations (écris-les « euh », « bah », « ben »). Si l'audio est vide ou inaudible, renvoie un texte vide."
+        "et les hésitations (écris-les « euh », « bah », « ben »). Écris les nombres, les dates et les années "
+        "EN TOUTES LETTRES, exactement comme ils sont prononcés (« mille neuf cent quatre-vingt-dix », « deux mille vingt-quatre », "
+        "« le premier mars »), jamais en chiffres. Si l'audio est vide ou inaudible, renvoie un texte vide."
     )
     prompt = 'Format JSON attendu : {"text": "transcription mot à mot"}'
     result, used_model = await asyncio.to_thread(call_gemini, prompt, system_extra, False, [part], True)

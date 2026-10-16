@@ -45,6 +45,7 @@ import {
   recordTypeResult,
   getWeakTypes,
 } from '../src/utils/repeatScoring.js';
+import { fitTranscript, detailToText } from '../src/utils/textLimits.js';
 import {
   REPEAT_PHRASES,
   PHRASE_TYPES,
@@ -581,9 +582,13 @@ test('countErrors détecte les correspondances, manques, fautes légères et sub
 test('timeLimitFor applique la formule avec arrondi supérieur et minimum 4s', () => {
   // 6 mots, niveau 1 : factor = 0.90 -> ceil(6 * 0.90) + 2 = 6 + 2 = 8s
   assert.equal(timeLimitFor('Un deux trois quatre cinq six', 1), 8);
-  // 30 mots, niveau 10 : factor = 0.54 -> ceil(30 * 0.54) + 2 = 17 + 2 = 19s
+  // 30 mots, niveau 10 : factor = 0.42 -> ceil(30 * 0.42) + 2 = 13 + 2 = 15s
   const text30 = new Array(30).fill('mot').join(' ');
-  assert.equal(timeLimitFor(text30, 10), 19);
+  assert.equal(timeLimitFor(text30, 10), 15);
+  // La pression monte plus vite après le niveau 4 qu'avant
+  assert.ok(timeLimitFor(text30, 4) - timeLimitFor(text30, 5) <= timeLimitFor(text30, 5) - timeLimitFor(text30, 7));
+  // Les nombres se chronomètrent d'après les mots prononcés, pas les chiffres
+  assert.equal(timeLimitFor('mille neuf cent quatre-vingt-dix', 1), timeLimitFor('un deux trois quatre cinq six', 1));
   // 1 mot, niveau 1 : ceil(0.9) + 2 = 3 -> min 4s
   assert.equal(timeLimitFor('bonjour', 1), 4);
 });
@@ -601,6 +606,62 @@ test('roundPenalty calcule les points perdus selon les erreurs et le dépassemen
   assert.equal(roundPenalty({ errors: 2, overTime: false }), 10);
   assert.equal(roundPenalty({ errors: 0, overTime: true }), 10);
   assert.equal(roundPenalty({ errors: 3, overTime: true }), 25);
+  // Au-delà du niveau 4, chaque erreur coûte plus cher (5 pts jusqu'au niv. 4, 6 au niv. 5 … 11 au niv. 10)
+  assert.equal(roundPenalty({ errors: 2, level: 4 }), 10);
+  assert.equal(roundPenalty({ errors: 2, level: 5 }), 12);
+  assert.equal(roundPenalty({ errors: 3, level: 10 }), 33);
+});
+
+test('les nombres en lettres et en chiffres comptent pour le même mot', () => {
+  assert.deepEqual(normalizeWords('mille neuf cent'), ['1900']);
+  assert.deepEqual(normalizeWords('dix-neuf cent quatre-vingt-dix'), ['1990']);
+  assert.deepEqual(normalizeWords('mille neuf cent quatre-vingt-dix-neuf'), ['1999']);
+  assert.deepEqual(normalizeWords('deux mille vingt-quatre'), ['2024']);
+  assert.deepEqual(normalizeWords('soixante et onze'), ['71']);
+  assert.deepEqual(normalizeWords('quatre-vingts'), ['80']);
+  assert.deepEqual(normalizeWords('quatorze millions sept cent mille euros'), ['14700000', 'euros']);
+  assert.deepEqual(normalizeWords('trois milliards deux cent cinquante millions'), ['3250000000']);
+  assert.deepEqual(normalizeWords('842 375 visiteurs'), ['842375', 'visiteurs']);
+  assert.deepEqual(normalizeWords('le premier mars'), ['le', '1', 'mars']);
+  assert.deepEqual(normalizeWords('le 1er mars'), ['le', '1', 'mars']);
+  assert.equal(countErrors('quarante pour cent des gens', '40 % des gens').errors, 0);
+  assert.equal(countErrors('quarante pour cent des gens', '40% des gens').errors, 0);
+  // « un » seul reste un mot ; des nombres séparés ne fusionnent pas
+  assert.deepEqual(normalizeWords('un chat'), ['un', 'chat']);
+  assert.deepEqual(normalizeWords('deux trois'), ['2', '3']);
+
+  assert.equal(countErrors('Nous sommes en mille neuf cent quatre-vingt-dix', 'Nous sommes en 1990').errors, 0);
+  assert.equal(countErrors('Le vingt-trois septembre deux mille dix-huit', 'le 23 septembre 2018', 9).errors, 0);
+  assert.equal(countErrors('mille neuf cent', '1900').errors, 0);
+  assert.equal(countErrors('mille neuf cent', '1800').errors, 1);
+});
+
+test('fitTranscript ramène un long échange sous la limite du serveur (bug fin de débat)', () => {
+  const ligne = (role) => `${role} : ${'blabla '.repeat(150)}`;
+  const echange = [ligne('TOI'), ligne('ADVERSAIRE'), ligne('TOI'), ligne('ADVERSAIRE'),
+    ligne('TOI'), ligne('ADVERSAIRE'), ligne('TOI'), ligne('ADVERSAIRE')].join('\n');
+  assert.ok(echange.length > 6000);
+  const fit = fitTranscript(echange);
+  assert.ok(fit.length <= 5800);
+  // Les répliques de l'utilisateur sont conservées en entier, seul l'adversaire est raccourci
+  assert.ok(fit.includes(ligne('TOI')));
+  assert.equal(fit.split('\n').length, 8);
+  assert.equal(fitTranscript('court'), 'court');
+  assert.equal(fitTranscript(undefined), undefined);
+});
+
+test('detailToText aplatit les erreurs 422 de FastAPI en texte affichable', () => {
+  assert.equal(detailToText('Erreur simple'), 'Erreur simple');
+  assert.equal(detailToText([{ type: 'string_too_long', loc: ['body', 'transcript'], msg: 'String should have at most 6000 characters' }]),
+    'String should have at most 6000 characters');
+  assert.equal(detailToText(undefined), '');
+  assert.equal(typeof detailToText({ a: 1 }), 'string');
+});
+
+test('la tolérance sur les mots proches baisse après le niveau 4', () => {
+  // « cents » vs « cent » : toléré aux niveaux 1-4, plus ensuite
+  assert.equal(countErrors('un grand chat noir', 'un grands chat noir', 4).errors, 0);
+  assert.equal(countErrors('un grand chat noir', 'un grands chat noir', 5).errors, 1);
 });
 
 test('REPEAT_PHRASES et getFallbackPhrases fournissent des phrases par niveau', () => {

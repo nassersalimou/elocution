@@ -1,4 +1,5 @@
 import { AI_BASE, aiHeaders } from './apiConfig';
+import { fitTranscript, detailToText } from '../utils/textLimits';
 
 const COACH_ENDPOINT = `${AI_BASE}/coach`;
 const COACH_MODES_KEY = 'elocution-coach-modes';
@@ -82,7 +83,7 @@ async function post(path, body, timeoutMs = 45000) {
     let errMessage = '';
     try {
       const errJson = await res.json();
-      errMessage = errJson.detail || '';
+      errMessage = detailToText(errJson.detail);
     } catch {
       errMessage = await res.text().catch(() => '');
     }
@@ -117,8 +118,8 @@ export async function getAiFeedback({
 }) {
   return post('/feedback', {
     game,
-    subject,
-    transcript,
+    subject: fitTranscript(subject),
+    transcript: fitTranscript(transcript),
     metrics,
     attempt,
     wantModel,
@@ -289,7 +290,7 @@ export async function voiceFeedback({
     let errMessage = '';
     try {
       const errJson = await res.json();
-      errMessage = errJson.detail || '';
+      errMessage = detailToText(errJson.detail);
     } catch {
       errMessage = await res.text().catch(() => '');
     }
@@ -387,7 +388,7 @@ export async function duelTurnAudio({
     let errMessage = '';
     try {
       const errJson = await res.json();
-      errMessage = errJson.detail || '';
+      errMessage = detailToText(errJson.detail);
     } catch {
       errMessage = await res.text().catch(() => '');
     }

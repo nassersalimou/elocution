@@ -165,8 +165,8 @@ export function RepeatGame({ quickMode = false, onComplete }) {
     if (!currentPhrase) return;
 
     if (transcription) {
-      const errStats = countErrors(currentPhrase.text, transcription);
-      const penalty = roundPenalty({ errors: errStats.errors, overTime });
+      const errStats = countErrors(currentPhrase.text, transcription, currentPhrase.level);
+      const penalty = roundPenalty({ errors: errStats.errors, overTime, level: currentPhrase.level });
       recordTypeResult(currentPhrase.type, errStats.errors);
 
       const nextPoints = Math.max(0, points - penalty);
@@ -268,7 +268,8 @@ export function RepeatGame({ quickMode = false, onComplete }) {
 
         <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.5 }}>
           Écoute la phrase, répète-la à l'oral sans erreur et avant la fin du temps.
-          100 points au départ, chaque erreur coûte des points. Le temps baisse à chaque manche.
+          100 points au départ, chaque erreur coûte des points. Le temps baisse à chaque manche,
+          et dès le niveau 5 les phrases s'allongent, le chrono se resserre et chaque erreur coûte de plus en plus cher.
         </p>
 
         {/* NIVEAU DE DÉPART */}

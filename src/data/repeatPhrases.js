@@ -56,59 +56,60 @@ export const REPEAT_PHRASES = [
   { text: 'Les enfants et leurs amis ont attendu un instant sous un abri de fortune.', type: 'liaisons', level: 4 },
   { text: 'Si six scies scient six cyprès, six cents scies scient six cents cyprès.', type: 'sons_proches', level: 4 },
 
-  // --- NIVEAU 5 (14 à 18 mots) ---
-  { text: 'Fruits frais, fruits cuits, fruits crus, trois tortues trottaient sur un trottoir très étroit.', type: 'virelangue', level: 5 },
-  { text: "Le silence matinal de la grande bibliothèque n'était troublé que par le froissement discret des pages.", type: 'longue', level: 5 },
-  { text: 'Entre dix-neuf cent quatre-vingt-dix et deux mille vingt, les investissements ont progressé de quarante-deux pour cent.', type: 'chiffres', level: 5 },
-  { text: 'De Saint-Malo à Perpignan, Jean de La Fontaine puisa son inspiration pour ses plus célèbres fables.', type: 'noms_propres', level: 5 },
-  { text: 'Une telle péripétie ne saurait altérer la constante sérénité dont témoigne cet éminent magistrat réputé intègre.', type: 'vocabulaire_soutenu', level: 5 },
-  { text: 'Les oiseaux ont quitté leurs anciens nids pour trouver un autre refuge dans les grands arbres.', type: 'liaisons', level: 5 },
-  { text: 'Seize chaises sèches cherchent seize sorcières sages sous un saule sombre et solitaire.', type: 'sons_proches', level: 5 },
+  // --- NIVEAU 5 (17 à 22 mots, une vraie difficulté par phrase) ---
+  { text: 'Trois gros rats gris grattaient trois grandes grappes grasses, pendant que trois grues grises grignotaient gravement trois grains gris.', type: 'virelangue', level: 5 },
+  { text: "Dans la cour de la vieille ferme, le jardinier ramassait patiemment les feuilles mortes que l'automne avait dispersées pendant la nuit.", type: 'longue', level: 5 },
+  { text: 'Entre mille neuf cent quatre-vingt-dix et deux mille vingt, la population de cette ville est passée de douze mille à quarante-sept mille habitants.', type: 'chiffres', level: 5 },
+  { text: 'Pierre et Marie Curie ont découvert le radium à Paris, avant que Marie ne reçoive un second prix Nobel à Stockholm.', type: 'noms_propres', level: 5 },
+  { text: "Cette équivoque persistante entre la rigueur affichée et la complaisance réelle nuit gravement à la crédibilité de l'institution tout entière.", type: 'vocabulaire_soutenu', level: 5 },
+  { text: "Nous avons tous étudié ensemble ces anciens articles, et ils étaient plus intéressants qu'on ne l'avait imaginé hier.", type: 'liaisons', level: 5 },
+  { text: 'Un chasseur sachant chasser sans son chien chasse six chevreuils chétifs chaque soir dans ces champs sombres.', type: 'sons_proches', level: 5 },
 
-  // --- NIVEAU 6 (16 à 21 mots) ---
-  { text: 'Tas de riz, tas de rats, tas de riz tentant, tas de rats tentés, le riz tenta les rats.', type: 'virelangue', level: 6 },
-  { text: "Lorsque la lumière dorée du crépuscule illumine les toits d'ardoise, toute la vieille cité semble plongée dans un rêve immémorial.", type: 'longue', level: 6 },
-  { text: 'Le traité signé le vingt-sept novembre mille neuf cent quatre-vingt-dix-neuf engageait vingt-trois nations pour une durée de trente ans.', type: 'chiffres', level: 6 },
-  { text: 'Gustave Flaubert, Émile Zola et Honoré de Balzac ont dépeint les travers de la société bourgeoise du dix-neuvième siècle.', type: 'noms_propres', level: 6 },
-  { text: 'La magnanimité du souverain contrastait singulièrement avec la vindicte opiniâtre que nourrissaient ses plus belliqueux conseillers de cour.', type: 'vocabulaire_soutenu', level: 6 },
-  { text: "Vous avez sans doute appris que les experts ont analysé d'anciens manuscrits dans un profond recueillement intellectuel.", type: 'liaisons', level: 6 },
-  { text: "Didon dîna, dit-on, du dos d'un dodu dindon, tandis que dix dindons dodus dormaient dehors.", type: 'sons_proches', level: 6 },
+  // --- NIVEAU 6 (21 à 28 mots) ---
+  { text: "Un généreux déjeuner régénérerait ces jeunes gens jonglant jusqu'à minuit, mais ces gens jeûnent justement chaque jeudi, jour de jeûne général dans la jungle.", type: 'virelangue', level: 6 },
+  { text: 'Au sommet de la colline balayée par le vent, le vieil astronome ajustait lentement son télescope en attendant que les nuages découvrent enfin la comète annoncée depuis plusieurs semaines.', type: 'longue', level: 6 },
+  { text: 'Le vingt-trois septembre deux mille dix-huit, trois cent quarante-sept bénévoles ont distribué mille deux cent soixante-quinze repas dans quatorze villages de la vallée.', type: 'chiffres', level: 6 },
+  { text: 'Léonard de Vinci, Michel-Ange et Raphaël ont travaillé tour à tour à Florence, à Rome et à Milan pour les Médicis, les papes et les Sforza.', type: 'noms_propres', level: 6 },
+  { text: "Son intransigeance doctrinale, loin de servir la cause qu'il prétendait défendre, finit par aliéner les plus fidèles de ses partisans et par discréditer son propos.", type: 'vocabulaire_soutenu', level: 6 },
+  { text: "Les experts ont attentivement examiné ces anciens objets, et ils en ont conclu qu'ils étaient aussi authentiques qu'inestimables, ce qui a surpris tous les invités.", type: 'liaisons', level: 6 },
+  { text: 'Six cent six chasseurs chassaient six cent six chamois sauvages sous six cent six sapins serrés, chacun cherchant sa chance sans sa sacoche.', type: 'sons_proches', level: 6 },
 
-  // --- NIVEAU 7 (18 à 25 mots) ---
-  { text: "Ciel, si c'est cinq sous ces six saucissons-ci, c'est cent sous ces six cents saucissons-ci, s'écria le charcutier surpris.", type: 'virelangue', level: 7 },
-  { text: 'Au cœur des massifs alpins, les randonneurs chevronnés découvrent souvent des sentiers oubliés que seuls les bergers de jadis parcouraient au retour des estives.', type: 'longue', level: 7 },
-  { text: 'Sur un échantillon de huit cent soixante-quinze personnes interrogées entre le premier et le dix-huit mars, soixante-deux pour cent privilégient cette option.', type: 'chiffres', level: 7 },
-  { text: "De Chambord à Chenonceau, François Premier et Catherine de Médicis ont laissé une empreinte indélébile sur l'architecture de la Renaissance française.", type: 'noms_propres', level: 7 },
-  { text: 'Cette dichotomie fallacieuse entre pragmatisme gestionnaire et idéalisme politique obscurcit le discernement des citoyens et affaiblit le débat démocratique contemporain.', type: 'vocabulaire_soutenu', level: 7 },
-  { text: 'Les grands auteurs ont souvent exprimé un attachement sans égal aux nobles idéaux qui unissent les peuples par-delà leurs frontières.', type: 'liaisons', level: 7 },
-  { text: "La pie niche haut, l'oie niche bas, où niche l'hibou ? L'hibou ne niche ni haut ni bas, l'hibou niche entre deux bois.", type: 'sons_proches', level: 7 },
+  // --- NIVEAU 7 (25 à 33 mots) ---
+  { text: 'Pruneau de Perse, prune de Brignoles, prunelle prise dans la brume : prune par prune, prunier par prunier, prépare ta prune et prépare ton prunier.', type: 'virelangue', level: 7 },
+  { text: 'Bien avant que le jour ne se lève sur le port endormi, les pêcheurs préparaient déjà leurs filets, vérifiaient les moteurs et chargeaient la glace nécessaire à la longue traversée qui les attendait.', type: 'longue', level: 7 },
+  { text: 'Sur les neuf cent quatre-vingt-sept mille euros de subvention votés le douze février deux mille vingt et un, seulement trois cent soixante-dix-huit mille ont été effectivement versés avant juin.', type: 'chiffres', level: 7 },
+  { text: 'Napoléon Bonaparte, né à Ajaccio, fut couronné à Notre-Dame de Paris, vaincu à Waterloo puis exilé à Sainte-Hélène, très loin de la Corse et de Fontainebleau.', type: 'noms_propres', level: 7 },
+  { text: "L'ostentation avec laquelle ce ministre affichait sa probité contrastait cruellement avec les stratagèmes dilatoires qu'il employait pour éluder les investigations de la commission parlementaire.", type: 'vocabulaire_soutenu', level: 7 },
+  { text: "Quand ils ont aperçu les anciens élèves arriver à huit heures et demie, ils en ont été tellement émus qu'ils ont oublié d'enlever leurs imperméables.", type: 'liaisons', level: 7 },
+  { text: 'Cinq chats chassent six souris sournoises ; six souris sentent cinq chats et se cachent sous cinq sièges ; ces sièges sont si secs que six souris glissent.', type: 'sons_proches', level: 7 },
 
-  // --- NIVEAU 8 (21 à 28 mots) ---
-  { text: 'Un pâtissier qui pâtissait chez un tapissier qui tapissait dit un jour au tapissier qui tapissait : pourquoi ne pas pâtisser ensemble ?', type: 'virelangue', level: 8 },
-  { text: "Malgré l'âpreté des vents d'hiver et la montée continue des eaux côtières, les gardiens du phare maintenaient la lanterne allumée avec un courage admirable et constant.", type: 'longue', level: 8 },
-  { text: "Le projet nécessitera un budget de quatorze millions sept cent mille euros répartis sur quatre tranches distinctes jusqu'au trente et un décembre deux mille vingt-sept.", type: 'chiffres', level: 8 },
-  { text: 'Rostand composa pour Sarah Bernhardt et Coquelin des tirades flamboyantes que les comédiens du Théâtre de la Porte-Saint-Martin déclamaient avec ferveur.', type: 'noms_propres', level: 8 },
-  { text: "L'herméneutique des textes fondateurs exige une circonspection philologique rigoureuse afin d'éviter toute interprétation anachronique susceptible de dénaturer la pensée originelle de l'auteur.", type: 'vocabulaire_soutenu', level: 8 },
-  { text: "Des hommes illustres ont souvent laissé entendre qu'un accord tacite entre les nations pouvait prévenir les plus dramatiques erreurs du passé.", type: 'liaisons', level: 8 },
-  { text: "Natacha n'attacha pas son chat Pacha qui s'échappa, ce qui fâcha Sacha qui chassa Natacha du chalet familial.", type: 'sons_proches', level: 8 },
+  // --- NIVEAU 8 (28 à 36 mots) ---
+  { text: "Ton thé t'a-t-il ôté ta toux ? Ton tonton Théodore tond ton tout petit teckel tandis que tante Thérèse tamise trente-trois tonnes de tapioca tiède.", type: 'virelangue', level: 8 },
+  { text: "Malgré la fatigue accumulée pendant ces dernières semaines de travail acharné, la petite équipe de chercheurs continuait d'espérer qu'une dernière série d'expériences leur révélerait enfin la clef du mystère qui occupait leurs nuits.", type: 'longue', level: 8 },
+  { text: "Au terme de dix-huit mois de négociations, les deux cent trente-quatre délégués ont ratifié un accord de trois milliards deux cent cinquante millions d'euros, entré en vigueur le premier janvier deux mille vingt-cinq.", type: 'chiffres', level: 8 },
+  { text: "Dostoïevski, Tolstoï et Tchekhov ont décrit l'âme russe, tandis que Cervantès, García Márquez et Borges ont exploré l'imaginaire hispanique, de Madrid à Buenos Aires.", type: 'noms_propres', level: 8 },
+  { text: 'La pusillanimité des gouvernants, savamment dissimulée derrière une rhétorique de la prudence, a fini par engendrer une défiance généralisée dont les ressorts échappent encore aux analystes les plus perspicaces.', type: 'vocabulaire_soutenu', level: 8 },
+  { text: "Ces hommes illustres n'ont jamais hésité à affirmer, en toute occasion et sans aucune arrière-pensée, qu'un enfant instruit est un atout inestimable pour une nation entière.", type: 'liaisons', level: 8 },
+  { text: 'Le serpent sournois siffle sans cesse sous les saules, tandis que six cents sauterelles sautillent sur ces sentiers sablonneux sans jamais se soucier du soleil.', type: 'sons_proches', level: 8 },
 
-  // --- NIVEAU 9 (23 à 30 mots) ---
-  { text: "La cavale au Valaque avala l'eau du lac et le Valaque avala la cavale sans laisser la moindre trace de ce fantastique banquet aquatique.", type: 'virelangue', level: 9 },
-  { text: "Après plusieurs semaines d'une navigation particulièrement rude au milieu d'icebergs menaçants, l'équipage exténué aperçut enfin la terre ferme dissimulée derrière un épais rideau de brume matinale.", type: 'longue', level: 9 },
-  { text: 'Sur les trois mille deux cent quarante candidats inscrits au concours du quinze septembre deux mille vingt-trois, seuls quatre-vingt-huit ont été admis au second tour.', type: 'chiffres', level: 9 },
-  { text: "Montesquieu, Jean-Jacques Rousseau et Denis Diderot partagèrent avec Voltaire une foi inébranlable dans le pouvoir émancipateur des Lumières à travers toute l'Europe occidentale.", type: 'noms_propres', level: 9 },
-  { text: "L'obséquiosité coutumière de cette assemblée courtisane masquait à peine la pusillanimité collective face aux décisions péremptoires dictées par un exécutif devenu réfractaire à toute contradiction publique.", type: 'vocabulaire_soutenu', level: 9 },
-  { text: 'Les anciens élèves ont unanimement affirmé que les excellents conseils de leurs professeurs avaient constitué une aide précieuse tout au long de leur parcours universitaire.', type: 'liaisons', level: 9 },
-  { text: "Seize jacinthes sèches séchaient sur seize souches sombres sous le souffle sifflant d'un sévère blizzard septentrional.", type: 'sons_proches', level: 9 },
+  // --- NIVEAU 9 (33 à 44 mots) ---
+  { text: "Quand un cordonnier cordant sa corde cordonne, tous les cordonniers qui cordent leur corde cordonnent comme lui ; mais celui qui corde mal sa corde corrompt le cordon que ses confrères cordaient.", type: 'virelangue', level: 9 },
+  { text: "Lorsque les premiers rayons du soleil franchirent enfin la crête des montagnes, le village entier, jusque-là plongé dans un silence presque religieux, s'éveilla dans un joyeux tumulte de volets claquants, d'aboiements lointains et d'appels échangés d'une fenêtre à l'autre.", type: 'longue', level: 9 },
+  { text: "Selon l'enquête menée du quatre au dix-neuf novembre mille neuf cent quatre-vingt-quinze auprès de vingt-deux mille six cent quarante-trois foyers, soixante-dix-huit pour cent des personnes interrogées jugeaient la situation préoccupante.", type: 'chiffres', level: 9 },
+  { text: "Gabriel García Márquez, Pablo Neruda et Octavio Paz, nés en Colombie, au Chili et au Mexique, ont reçu le prix Nobel de littérature, tandis qu'Isabel Allende préférait vivre à San Francisco.", type: 'noms_propres', level: 9 },
+  { text: "L'ambivalence structurelle de cette réforme, tour à tour célébrée comme un aggiornamento nécessaire et dénoncée comme une capitulation idéologique, illustre l'impossibilité d'un consensus que nul n'ose franchement appeler de ses vœux.", type: 'vocabulaire_soutenu', level: 9 },
+  { text: "Les amis étrangers, accueillis à Orléans par un ancien ingénieur aussi élégant qu'affable, ont admiré ensemble les immenses allées ombragées où les écoliers s'amusaient à épeler à haute voix leurs exercices.", type: 'liaisons', level: 9 },
+  { text: 'Ces six chevaux chauves chassent chacun six chats chétifs sur les chemins chauds, cherchant chaque jour sans cesse ce chaud chalet où sèchent six chemises sales.', type: 'sons_proches', level: 9 },
 
-  // --- NIVEAU 10 (25 à 35 mots denses) ---
-  { text: 'Six sous-préfets sur six cents surfaces sèches sucent six sangsues sans souci des soupçons formulés par six magistrats sévères qui surveillent chaque geste sous un soleil souverain.', type: 'virelangue', level: 10 },
-  { text: "Tandis que la tempête redoublait d'intensité sur la crête rocheuse, les sauveteurs progressaient pas à pas dans l'obscurité totale, guidés uniquement par le signal intermittent d'une balise de détresse enfouie sous un monticule de neige durcie.", type: 'longue', level: 10 },
-  { text: "Le rapport officiel dénombre deux mille huit cent soixante-quatre interventions maritimes au cours de l'année deux mille vingt-deux, mobilisant près de dix-sept mille bénévoles sur sept cent quarante kilomètres de côtes.", type: 'chiffres', level: 10 },
-  { text: 'De Fontainebleau à Versailles, le cardinal de Richelieu et le cardinal Mazarin façonnèrent la diplomatie européenne sous les règnes successifs de Louis Treize et de Louis Quatorze.', type: 'noms_propres', level: 10 },
-  { text: "La propension inextinguible à l'ergotage byzantin qui caractérise ce cénacle d'érudits désœuvrés paralyse irrémédiablement l'émergence d'un consensus épistémologique pourtant indispensable à l'aboutissement de leurs travaux scientifiques conjoints.", type: 'vocabulaire_soutenu', level: 10 },
-  { text: "Les illustres invités ont enfin accédé aux étages supérieurs où les organisateurs avaient élégamment disposé les précieux objets d'art découverts lors des récentes fouilles archéologiques en Orient.", type: 'liaisons', level: 10 },
-  { text: 'Le chasseur Sacho chuchota à Sacha : sache chasser ce chat chagrin qui cherche sans cesse à chiper sept saucisses sèches sous ce chapeau sombre !', type: 'sons_proches', level: 10 },
+  // --- NIVEAU 10 (38 à 52 mots, très denses) ---
+  { text: 'Le sixième sapeur-pompier de la sixième section cherche six cent six sacs de sel sous six sièges sales, sachant que ces six cents saucissons si savoureux sentaient sûrement ce sel sec que six sourciers sans soucis suçaient sans cesse.', type: 'virelangue', level: 10 },
+  { text: "Alors que l'orage grondait au-dessus de la vallée et que la rivière, grossie par les pluies de la semaine, menaçait de déborder à chaque instant, les habitants du hameau, rassemblés dans la grange du vieux Marcel, s'organisaient en silence pour sauver ce qui pouvait encore l'être avant l'aube.", type: 'longue', level: 10 },
+  { text: "En deux mille dix-neuf, les huit cent quarante-deux mille trois cent soixante-quinze visiteurs du musée ont payé un billet de quatorze euros, soit onze millions sept cent quatre-vingt-treize mille deux cent cinquante euros de recettes, en hausse de quarante pour cent sur l'année précédente.", type: 'chiffres', level: 10 },
+  { text: 'De Jean-Sébastien Bach à Wolfgang Amadeus Mozart, puis de Ludwig van Beethoven à Frédéric Chopin, Franz Liszt et Claude Debussy, la musique européenne a traversé Leipzig, Vienne, Varsovie, Weimar et Paris.', type: 'noms_propres', level: 10 },
+  { text: "La déliquescence progressive des corps intermédiaires, que d'aucuns attribuent à la défiance endémique envers toute forme de médiation institutionnelle, n'est peut-être que le symptôme d'une mutation anthropologique dont nous peinons encore à mesurer l'ampleur véritable.", type: 'vocabulaire_soutenu', level: 10 },
+  { text: "Il est peu probable qu'ils aient pu entendre, à travers ces épais murs anciens, les échos affaiblis des appels aigus que leurs amis adressaient aux ouvriers occupés à l'étage supérieur.", type: 'liaisons', level: 10 },
+  { text: "Ce serpent sifflant a surpris six cent soixante-six scorpions assoupis sous ces sept énormes souches sèches, si bien que ces sinistres sauriens ont sursauté sans savoir ce qui s'était passé.", type: 'sons_proches', level: 10 },
+
 ];
 
 /**
