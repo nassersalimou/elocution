@@ -1,5 +1,6 @@
 import { LocalVoiceAnalysisProvider } from './LocalVoiceAnalysisProvider.js';
 import { AI_BASE, aiHeaders, notifyCodeRejected } from '../apiConfig.js';
+import { blobHasSpeech } from '../../utils/speechActivity.js';
 
 let activeProvider = new LocalVoiceAnalysisProvider();
 
@@ -54,6 +55,10 @@ const TRANSCRIBE_ENDPOINT = `${AI_BASE}/coach/transcribe`;
 export async function transcribeRecording(audioBlob) {
   if (!audioBlob || audioBlob.size < 1000) {
     return { success: false, error: 'Enregistrement vide.' };
+  }
+  // Silence : on ne transcrit pas (le modèle inventerait une phrase) et on ne tente pas Whisper.
+  if (!(await blobHasSpeech(audioBlob))) {
+    return { success: false, silent: true, error: 'Aucun son détecté dans l\'enregistrement.' };
   }
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);

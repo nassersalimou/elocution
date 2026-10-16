@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './AdversaryAvatar.css';
 import penseMenton from '../../assets/adversaire/pense-menton.webp';
 import penseTete from '../../assets/adversaire/pense-tete.webp';
 import penseMalin from '../../assets/adversaire/pense-malin.webp';
@@ -19,7 +20,7 @@ const CAPTIONS = {
   thinking: 'L\'adversaire réfléchit…',
   speaking: 'L\'adversaire te répond',
 };
-const ROTATE_MS = { thinking: 3500, speaking: 3000 };
+const ROTATE_MS = { thinking: 4500, speaking: 4500 };
 
 function pickOther(list, current) {
   if (list.length <= 1) return 0;
@@ -28,7 +29,8 @@ function pickOther(list, current) {
   return next;
 }
 
-export function AdversaryAvatar({ mood = 'thinking' }) {
+// `children` : le texte affiché PAR-DESSUS l'image (réplique de l'adversaire, etc.).
+export function AdversaryAvatar({ mood = 'thinking', children = null }) {
   const poses = POSES[mood] || POSES.thinking;
   const [index, setIndex] = useState(() => Math.floor(Math.random() * poses.length));
 
@@ -50,32 +52,11 @@ export function AdversaryAvatar({ mood = 'thinking' }) {
   const src = poses[index % poses.length];
 
   return (
-    <figure style={{ margin: 0, textAlign: 'center' }}>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '520px',
-          aspectRatio: '16 / 9',
-          margin: '0 auto',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-          border: '1px solid var(--violet)',
-          background: 'var(--bg-secondary)',
-        }}
-      >
-        <img
-          key={src}
-          className="animate-fade-in"
-          src={src}
-          alt={CAPTIONS[mood]}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
-      </div>
-      <figcaption style={{ marginTop: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-        {CAPTIONS[mood]}
-      </figcaption>
-    </figure>
+    <div className="adv-stage">
+      <img key={src} className="animate-fade-in" src={src} alt={CAPTIONS[mood]} />
+      <span className="adv-badge">{CAPTIONS[mood]}</span>
+      {children && <div className="adv-overlay">{children}</div>}
+    </div>
   );
 }
 

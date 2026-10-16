@@ -1187,7 +1187,9 @@ async def transcribe(file: UploadFile = File(...)) -> dict:
         "Ne corrige rien, ne reformule rien, n'ajoute rien : garde les fautes, les répétitions "
         "et les hésitations (écris-les « euh », « bah », « ben »). Écris les nombres, les dates et les années "
         "EN TOUTES LETTRES, exactement comme ils sont prononcés (« mille neuf cent quatre-vingt-dix », « deux mille vingt-quatre », "
-        "« le premier mars »), jamais en chiffres. Si l'audio est vide ou inaudible, renvoie un texte vide."
+        "« le premier mars »), jamais en chiffres. S'il n'y a aucune parole humaine claire dans l'audio "
+        "(silence, souffle, bruit de fond, voix inaudible), renvoie exactement {\"text\": \"\"} : n'invente JAMAIS de phrase "
+        "et ne complète jamais ce qui n'a pas été dit."
     )
     prompt = 'Format JSON attendu : {"text": "transcription mot à mot"}'
     result, used_model = await asyncio.to_thread(call_gemini, prompt, system_extra, False, [part], True)

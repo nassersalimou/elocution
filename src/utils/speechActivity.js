@@ -73,6 +73,45 @@ export function createSpeechTracker({
 }
 
 /**
+ * Dit si un enregistrement contient de la parole, AVANT de l'envoyer à la transcription :
+ * sur un silence, le modèle de transcription invente une phrase au hasard.
+ * Renvoie true en cas de doute (décodage impossible, navigateur sans Web Audio).
+ * @param {Blob} blob
+ * @returns {Promise<boolean>}
+ */
+export async function blobHasSpeech(blob) {
+  const AudioCtx = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
+  if (!blob || !AudioCtx) return true;
+  let ctx;
+  try {
+    ctx = new AudioCtx();
+    const audio = await ctx.decodeAudioData(await blob.arrayBuffer());
+    const data = audio.getChannelData(0);
+    const win = Math.max(1, Math.floor(audio.sampleRate * 0.05)); // fenêtres de 50 ms
+    const tracker = createSpeechTracker();
+    let peak = 0;
+    let found = false;
+    for (let i = 0, t = 0; i + win <= data.length; i += win, t += 50) {
+      let sum = 0;
+      for (let j = i; j < i + win; j++) sum += data[j] * data[j];
+      const level = Math.sqrt(sum / win);
+      if (level > peak) peak = level;
+      if (tracker.update(level, t).speechStartAt !== null) found = true;
+    }
+    // Un pic net compte aussi comme de la voix (micro très faible ou parole dès la première seconde).
+    return found || peak >= 0.03;
+  } catch {
+    return true;
+  } finally {
+    try {
+      ctx?.close();
+    } catch {
+      // Contexte déjà fermé
+    }
+  }
+}
+
+/**
  * Branche le suivi sur un flux micro (MediaStream) et rappelle `onUpdate` ~20 fois par seconde.
  * Renvoie une fonction d'arrêt. Sans Web Audio, ne fait rien (le bouton « Terminer » reste là).
  */

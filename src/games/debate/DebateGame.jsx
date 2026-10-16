@@ -57,7 +57,7 @@ export function DebateGame({ config, onComplete }) {
   const [analysisMetrics, setAnalysisMetrics] = useState(null);
   const [manualTranscriptInput, setManualTranscriptInput] = useState('');
   const [themeRated, setThemeRated] = useState(false);
-  const [exchangeStarted, setExchangeStarted] = useState(false);
+  const [silentTake, setSilentTake] = useState(false); // le micro n'a rien entendu pendant la réponse
   // Rallonges « +20 s » : 2 max par manche, partagées entre la réponse et l'échange oral.
   const [extraUsed, setExtraUsed] = useState(0);
   // Aides « 💡 » : 3 max par manche, partagées entre le sujet et l'échange oral.
@@ -114,7 +114,9 @@ export function DebateGame({ config, onComplete }) {
     if (coachMode !== 'ai' || !audioBlob) return;
     let active = true;
     transcribeRecording(audioBlob).then((res) => {
-      if (active && res?.success && res.data?.text) {
+      if (!active) return;
+      if (res?.silent) setSilentTake(true); // rien entendu : on ne laisse pas inventer de texte
+      else if (res?.success && res.data?.text) {
         setAnalysisTranscript((prev) => prev || res.data.text);
       }
     });
@@ -205,7 +207,7 @@ export function DebateGame({ config, onComplete }) {
     setAnalysisTranscript('');
     setAnalysisMetrics(null);
     setManualTranscriptInput('');
-    setExchangeStarted(false);
+    setSilentTake(false);
     setExchangeTranscript('');
     setExtraUsed(0);
     setHelpUsed(0);
@@ -377,7 +379,7 @@ export function DebateGame({ config, onComplete }) {
           <VoiceAnalysisReport
             audioBlob={audioBlob}
             onAnalysisComplete={(analysis) => {
-              if (coachMode === 'ai' && analysis) {
+              if (coachMode === 'ai' && analysis && !silentTake) {
                 // La transcription rapide (Gemini) est souvent déjà là : on ne l'écrase pas.
                 setAnalysisTranscript((prev) => prev || analysis.text || '');
                 setAnalysisMetrics(analysis.metrics || null);
@@ -386,8 +388,13 @@ export function DebateGame({ config, onComplete }) {
           />
         )}
 
-        {coachMode === 'ai' && !audioBlob && (
+        {coachMode === 'ai' && (!audioBlob || silentTake) && (
           <div className="card" style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {silentTake && (
+              <div style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '0.9rem' }}>
+                Je n'ai rien entendu dans le micro. Écris ta réponse pour que le coach l'analyse, ou refais la manche.
+              </div>
+            )}
             <label className="label" htmlFor="manual-transcript">
               Écris ta réponse en quelques phrases pour que le coach l'analyse
             </label>
@@ -411,34 +418,8 @@ export function DebateGame({ config, onComplete }) {
           </div>
         )}
 
-        {coachMode === 'ai' && analysisTranscript && !exchangeStarted && !exchangeTranscript && (
-          <div className="card animate-fade-in" style={{ margin: '1.5rem 0', textAlign: 'center', padding: '1.5rem', border: '1px solid var(--violet)' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--violet-light)' }}>
-              ⚔️ Défends ton argument à l'oral
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
-              L'adversaire IA t'attend pour tester la solidité de tes arguments.
-            </p>
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setExchangeStarted(true)}
-              >
-                Lancer l'échange oral
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setExchangeTranscript(analysisTranscript)}
-              >
-                Passer
-              </button>
-            </div>
-          </div>
-        )}
-
-        {coachMode === 'ai' && exchangeStarted && !exchangeTranscript && (
+        {/* L'échange oral démarre tout seul dès que la première réponse est transcrite. */}
+        {coachMode === 'ai' && !!analysisTranscript && !exchangeTranscript && (
           <OralExchange
             subject={currentQuestion?.text || ''}
             theme={customTopic ? '' : theme}
@@ -462,7 +443,7 @@ export function DebateGame({ config, onComplete }) {
             <AiFeedbackPanel
               game="debate"
               subject={
-                exchangeStarted && exchangeTranscript
+                exchangeTranscript.includes('ADVERSAIRE :')
                   ? `${currentQuestion?.text || ''} — échange oral avec un adversaire`
                   : (currentQuestion?.text || '')
               }
