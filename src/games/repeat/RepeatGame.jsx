@@ -6,9 +6,10 @@ import CircularTimer from '../../components/ui/CircularTimer';
 import { speak, stopSpeaking } from '../../services/speechService';
 import { transcribeRecording } from '../../services/voiceAnalysis/voiceAnalysisService';
 import { getPhrases } from '../../services/aiCoachService';
-import { getFallbackPhrases, PHRASE_TYPE_LABELS } from '../../data/repeatPhrases';
+import { buildPhraseSeries, getFallbackPhrases, PHRASE_TYPE_LABELS } from '../../data/repeatPhrases';
 import {
   countErrors,
+  isPhraseIncomplete,
   timeLimitFor,
   roundPenalty,
   recordTypeResult,
@@ -21,7 +22,8 @@ import audioRecorder from '../../services/audioService';
 import { createVoiceActivityMonitor } from '../../utils/speechActivity';
 
 // Au-delà de la limite de temps, on coupe de toute façon après ce délai (s).
-const HARD_STOP_GRACE_SECONDS = 8;
+// Petite marge à la fin du temps pour ne pas couper la dernière syllabe.
+const TIME_UP_GRACE_MS = 300;
 
 export function RepeatGame({ quickMode = false, onComplete }) {
   const navigate = useNavigate();
@@ -54,6 +56,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
   const speechRef = useRef({ startAt: null, lastVoiceAt: null });
   const finishingRef = useRef(false);
   const finishRef = useRef(null);
+  const stoppedByTimeRef = useRef(false);
 
   const stopMonitor = useCallback(() => {
     if (stopMonitorRef.current) stopMonitorRef.current();
@@ -86,6 +89,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
     stopSpeaking();
     stopMonitor();
     finishingRef.current = false;
+    stoppedByTimeRef.current = false;
     speechRef.current = { startAt: null, lastVoiceAt: null };
     recordStartRef.current = Date.now();
     setPhase('record');
@@ -96,9 +100,11 @@ export function RepeatGame({ quickMode = false, onComplete }) {
         speechRef.current = { startAt: info.speechStartAt, lastVoiceAt: info.lastVoiceAt };
         if (info.speechEnded && finishRef.current) finishRef.current();
       });
+      // Fin du temps : on coupe tout seul, et la phrase dira si on était trop lent.
       hardStopRef.current = setTimeout(() => {
+        stoppedByTimeRef.current = true;
         if (finishRef.current) finishRef.current();
-      }, (currentLimit + HARD_STOP_GRACE_SECONDS) * 1000);
+      }, currentLimit * 1000 + TIME_UP_GRACE_MS);
     } catch {
       // Micro indisponible
     }
@@ -138,7 +144,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
         weakTypes: weak,
       });
       if (res?.ok && Array.isArray(res.data?.phrases) && res.data.phrases.length > 0) {
-        loadedPhrases = res.data.phrases;
+        loadedPhrases = buildPhraseSeries(res.data.phrases, levelToStart, 10);
       }
     } catch {
       // Erreur réseau ou API
@@ -180,12 +186,9 @@ export function RepeatGame({ quickMode = false, onComplete }) {
     stopMonitor();
     timer.pause();
     setPhase('transcribing');
-    // Le dernier instant où l'on a entendu la voix décide si la phrase était finie à temps ;
-    // sans voix détectée, on se rabat sur l'instant du clic.
-    const lastVoiceAt = speechRef.current.lastVoiceAt;
-    const spokenUntil = lastVoiceAt ?? Date.now();
-    const elapsedSeconds = (spokenUntil - recordStartRef.current) / 1000;
-    const overTime = elapsedSeconds > currentLimit;
+    // « Trop lent » = le temps a coupé l'enregistrement ET la phrase n'est pas allée au bout
+    // (jugé plus bas sur la transcription, pas sur un chrono).
+    const cutByTime = stoppedByTimeRef.current;
 
     let transcription = '';
     const recResult = await stopRecording();
@@ -204,6 +207,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
 
     if (transcription) {
       const errStats = countErrors(currentPhrase.text, transcription, currentPhrase.level);
+      const overTime = cutByTime && isPhraseIncomplete(currentPhrase.text, transcription, currentPhrase.level);
       const penalty = roundPenalty({ errors: errStats.errors, overTime, level: currentPhrase.level });
       recordTypeResult(currentPhrase.type, errStats.errors);
 
@@ -230,7 +234,7 @@ export function RepeatGame({ quickMode = false, onComplete }) {
       setRoundResult({
         transcription: '',
         errors: 0,
-        overTime,
+        overTime: false,
         penalty: 0,
         failed: true,
       });
@@ -565,30 +569,23 @@ export function RepeatGame({ quickMode = false, onComplete }) {
             color="var(--violet)"
           />
 
-          {timer.seconds === 0 && (
-            <div style={{ margin: '0.75rem 0', padding: '0.4rem 0.75rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--red)', borderRadius: 'var(--radius)', fontSize: '0.85rem', fontWeight: 700 }}>
-              ⏱️ Temps limite dépassé : si tu parles encore, +10 pts de pénalité. Termine ta phrase !
-            </div>
-          )}
-
           <div className="recording-indicator" style={{ margin: '1.25rem 0' }}>
             <div className="recording-dot" />
             <Waveform active={isRecording} />
             <span style={{ fontSize: '0.85rem', color: 'var(--red)', fontWeight: 600 }}>Répète la phrase à voix haute</span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '-0.5rem 0 1rem' }}>
-            L'enregistrement s'arrête tout seul quand tu as fini de parler.
+            L'enregistrement s'arrête tout seul quand tu as fini de parler ou à la fin du temps.
           </p>
 
           {micError && <p style={{ color: 'var(--red)', fontSize: '0.85rem', marginBottom: '1rem' }}>{micError}</p>}
 
           <button
             type="button"
-            className="btn btn-primary btn-lg"
-            style={{ minWidth: '200px', fontWeight: 700 }}
+            className="btn btn-secondary"
             onClick={handleFinishRecording}
           >
-            Terminer ⏹️
+            J'ai fini ⏹️
           </button>
         </div>
       )}

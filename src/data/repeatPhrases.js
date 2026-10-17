@@ -146,3 +146,43 @@ export function getFallbackPhrases(startLevel = 1, count = 10) {
 
   return chosen;
 }
+
+// Nombre de mots minimum par niveau : en dessous, la phrase est trop facile pour son niveau
+// (l'IA renvoie parfois une phrase courte étiquetée « niveau 7 »).
+export const MIN_WORDS_BY_LEVEL = { 1: 4, 2: 6, 3: 8, 4: 11, 5: 17, 6: 21, 7: 25, 8: 28, 9: 33, 10: 38 };
+
+export function phraseWordCount(text) {
+  return typeof text === 'string' ? text.split(/[\s'’-]+/).filter(Boolean).length : 0;
+}
+
+/**
+ * Série de manches qui monte vraiment, petit à petit : le niveau est imposé par la position
+ * (levelForRound, jamais celui annoncé par l'IA), les phrases de l'IA sont prises de la plus
+ * courte à la plus longue, et une phrase trop courte pour son niveau est remplacée par une
+ * phrase de secours de ce niveau.
+ * @param {Array<{ text: string, type: string, level?: number }>} aiPhrases
+ * @param {number} startLevel
+ * @param {number} count
+ */
+export function buildPhraseSeries(aiPhrases, startLevel = 1, count = 10) {
+  const safeStart = Math.max(1, Math.min(10, Number(startLevel) || 1));
+  const safeCount = Math.max(1, Math.min(15, Number(count) || 10));
+  const fallback = getFallbackPhrases(safeStart, safeCount);
+  const candidates = (Array.isArray(aiPhrases) ? aiPhrases : [])
+    .filter((p) => p && typeof p.text === 'string' && p.text.trim())
+    .map((p) => ({ phrase: p, words: phraseWordCount(p.text) }))
+    .sort((a, b) => a.words - b.words);
+
+  const series = [];
+  let prevWords = 0;
+  for (let i = 0; i < safeCount; i++) {
+    const level = levelForRound(safeStart, i);
+    const minWords = MIN_WORDS_BY_LEVEL[level];
+    const idx = candidates.findIndex((c) => c.words >= minWords && c.words >= prevWords);
+    const picked = idx >= 0 ? candidates.splice(idx, 1)[0].phrase : fallback[i];
+    if (!picked) continue;
+    series.push({ ...picked, level });
+    prevWords = Math.max(prevWords, phraseWordCount(picked.text));
+  }
+  return series;
+}

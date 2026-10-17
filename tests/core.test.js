@@ -44,6 +44,7 @@ import {
   roundPenalty,
   recordTypeResult,
   getWeakTypes,
+  isPhraseIncomplete,
 } from '../src/utils/repeatScoring.js';
 import { fitTranscript, detailToText } from '../src/utils/textLimits.js';
 import { createSpeechTracker } from '../src/utils/speechActivity.js';
@@ -52,6 +53,9 @@ import {
   PHRASE_TYPES,
   PHRASE_TYPE_LABELS,
   getFallbackPhrases,
+  buildPhraseSeries,
+  MIN_WORDS_BY_LEVEL,
+  phraseWordCount,
 } from '../src/data/repeatPhrases.js';
 
 if (typeof globalThis.localStorage === 'undefined') {
@@ -695,6 +699,34 @@ test('détection de parole : une courte hésitation ne coupe pas, le silence ini
   // Un claquement bref (100 ms) ne compte pas comme de la parole
   const clac = playSpeech([[0.004, 500], [0.2, 100], [0.004, 3000]]);
   assert.equal(clac.last.speechStartAt, null);
+});
+
+test('détection de parole : la fin est vue même avec un bruit de fond qui remonte (gain auto)', () => {
+  // Calibrage au calme, voix forte, puis « silence » à 0,04 (au-dessus du seuil absolu)
+  const r = playSpeech([[0.004, 500], [0.3, 2000], [0.04, 3000]]);
+  assert.ok(r.endedAt !== null, 'le bruit remonté ne doit pas empêcher la fin');
+});
+
+test('phrase incomplète : jugée sur la fin de la phrase prononcée', () => {
+  const cible = 'Le chat noir dort sur le grand canapé rouge';
+  assert.equal(isPhraseIncomplete(cible, 'Le chat noir dort sur le grand canapé rouge', 3), false);
+  assert.equal(isPhraseIncomplete(cible, 'Le chat noir dort sur le grand canapé', 3), false);
+  assert.equal(isPhraseIncomplete(cible, 'Le chat noir dort sur', 3), true);
+  assert.equal(isPhraseIncomplete(cible, '', 3), true);
+});
+
+test('série Répète la phrase : le niveau monte toutes les 2 manches et les phrases trop courtes sont remplacées', () => {
+  const courte = { text: 'Un deux trois quatre cinq', type: 'longue', level: 8 };
+  const ia = Array.from({ length: 10 }, () => ({ ...courte }));
+  const serie = buildPhraseSeries(ia, 4, 10);
+  assert.equal(serie.length, 10);
+  serie.forEach((p, i) => {
+    assert.equal(p.level, levelForRound(4, i));
+    // Les phrases de secours sont écrites à la main pour leur niveau ; la courte de l'IA est écartée.
+    if (p.level >= 2) assert.notEqual(p.text, courte.text, `manche ${i + 1} : phrase trop courte gardée`);
+    if (p.text === courte.text) assert.ok(phraseWordCount(p.text) >= MIN_WORDS_BY_LEVEL[p.level]);
+  });
+  for (let i = 1; i < serie.length; i++) assert.ok(serie[i].level >= serie[i - 1].level, 'le niveau ne redescend jamais');
 });
 
 test('la tolérance sur les mots proches baisse après le niveau 4', () => {

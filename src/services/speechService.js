@@ -1,4 +1,5 @@
 import { AI_BASE, aiHeaders, notifyCodeRejected } from './apiConfig.js';
+import { getPlaybackElement } from '../utils/audioUnlock.js';
 
 // Lecture à voix haute : voix HD Google (serveur local /coach/tts, mise en cache)
 // en priorité, voix du navigateur en secours (serveur éteint, quota gratuit atteint…).
@@ -77,8 +78,22 @@ function speakWithBrowser(text, options, id) {
     currentUtterance = null;
     if (options.onEnd) options.onEnd();
   };
-  utterance.onend = finish;
-  utterance.onerror = finish;
+  // Garde-fou : sur Android, la voix du navigateur oublie souvent « onend » (ou ne parle pas
+  // du tout hors geste) ; sans lui, le jeu resterait bloqué sur « écoute ».
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const maxMs = 3000 + (words * 650) / (utterance.rate || 1);
+  const watchdog = setTimeout(() => {
+    if (id !== speakId || currentUtterance !== utterance) return;
+    utterance.onend = null;
+    utterance.onerror = null;
+    speechSynthesis.cancel();
+    finish();
+  }, maxMs);
+  utterance.onend = () => {
+    clearTimeout(watchdog);
+    finish();
+  };
+  utterance.onerror = utterance.onend;
   currentUtterance = utterance;
   speechSynthesis.speak(utterance);
 }
@@ -134,7 +149,10 @@ export function speak(text, options = {}) {
       return;
     }
     currentAudioUrl = URL.createObjectURL(blob);
-    const audio = new Audio(currentAudioUrl);
+    // Lecteur partagé, débloqué au premier toucher : un `new Audio()` lancé ici (après un
+    // téléchargement, donc hors geste) est refusé sur iPhone.
+    const audio = getPlaybackElement() || new Audio();
+    audio.src = currentAudioUrl;
     const fallback = () => {
       if (id !== speakId) return;
       currentAudio = null;
@@ -177,6 +195,7 @@ export function stopSpeaking() {
   if (currentAudio && typeof currentAudio.pause === 'function') {
     currentAudio.onended = null;
     currentAudio.onerror = null;
+    currentAudio.onplaying = null;
     currentAudio.pause();
   }
   currentAudio = null;

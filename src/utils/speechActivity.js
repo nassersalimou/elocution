@@ -1,3 +1,5 @@
+import { getSharedAudioContext } from './audioUnlock.js';
+
 /**
  * Détection de la parole (début et fin) à partir du niveau sonore du micro.
  * Sert au jeu « Répète la phrase » : l'enregistrement s'arrête tout seul quand
@@ -12,6 +14,9 @@
  *   si l'utilisateur parle déjà), le seuil de voix vaut ~3,5 × ce bruit.
  * - La parole commence après `minSpeechMs` de voix continue (un claquement ne compte pas).
  * - Elle est finie après `silenceMs` sans voix (une courte hésitation ne coupe pas).
+ * - Une fois la parole lancée, « voix » = au-dessus du seuil ET d'une fraction (`relativeFloor`)
+ *   du pic de la voix : sinon un ventilateur, un PC bruyant ou le gain automatique du micro
+ *   (qui remonte le bruit dès qu'on se tait, surtout sur téléphone) empêchent la fin.
  */
 export function createSpeechTracker({
   silenceMs = 1400,
@@ -20,6 +25,7 @@ export function createSpeechTracker({
   minThreshold = 0.015,
   maxThreshold = 0.06,
   factor = 3.5,
+  relativeFloor = 0.2,
 } = {}) {
   let t0 = null;
   let samples = [];
@@ -27,6 +33,7 @@ export function createSpeechTracker({
   let voicedSince = null;
   let speechStartAt = null;
   let lastVoiceAt = null;
+  let peak = 0;
   let ended = false;
 
   function calibrate() {
@@ -47,7 +54,9 @@ export function createSpeechTracker({
         return { speaking: false, speechEnded: false, speechStartAt, lastVoiceAt };
       }
 
-      const voiced = level > threshold;
+      const floor = speechStartAt !== null ? Math.max(threshold, peak * relativeFloor) : threshold;
+      const voiced = level > floor;
+      if (level > threshold && level > peak) peak = level;
       if (voiced) {
         if (voicedSince === null) voicedSince = now;
         if (speechStartAt === null && now - voicedSince >= minSpeechMs) speechStartAt = voicedSince;
@@ -116,23 +125,26 @@ export async function blobHasSpeech(blob) {
  * Renvoie une fonction d'arrêt. Sans Web Audio, ne fait rien (le bouton « Terminer » reste là).
  */
 export function createVoiceActivityMonitor(stream, onUpdate, options) {
-  const AudioCtx = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
-  if (!stream || !AudioCtx) return () => {};
-  let ctx;
+  if (!stream) return () => {};
+  // Contexte partagé, débloqué au premier toucher : un contexte neuf créé ici (hors geste,
+  // juste après la voix de l'appli) resterait muet sur mobile et la fin ne serait jamais vue.
+  const ctx = getSharedAudioContext();
+  if (!ctx) return () => {};
+  let source;
+  let analyser;
   try {
-    ctx = new AudioCtx();
+    source = ctx.createMediaStreamSource(stream);
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    source.connect(analyser);
   } catch {
     return () => {};
   }
-  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-  const source = ctx.createMediaStreamSource(stream);
-  const analyser = ctx.createAnalyser();
-  analyser.fftSize = 1024;
-  source.connect(analyser);
   const buf = new Float32Array(analyser.fftSize);
   const tracker = createSpeechTracker(options);
 
   const id = setInterval(() => {
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     analyser.getFloatTimeDomainData(buf);
     let sum = 0;
     for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
@@ -144,9 +156,8 @@ export function createVoiceActivityMonitor(stream, onUpdate, options) {
     clearInterval(id);
     try {
       source.disconnect();
-      ctx.close();
     } catch {
-      // Contexte déjà fermé
+      // Déjà débranché
     }
   };
 }

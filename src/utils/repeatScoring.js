@@ -316,6 +316,27 @@ export function timeLimitFor(text, level = 1) {
 }
 
 /**
+ * La phrase a-t-elle été dite jusqu'au bout ? On regarde si l'un des 2 derniers mots
+ * attendus figure parmi les 4 derniers mots prononcés (un dernier mot mal articulé ne
+ * compte pas comme « pas fini », c'est déjà une erreur de mot).
+ * Sert à juger « trop lent » quand le temps a coupé l'enregistrement.
+ * @param {string} target
+ * @param {string} spoken
+ * @param {number} level
+ * @returns {boolean}
+ */
+export function isPhraseIncomplete(target, spoken, level = 1) {
+  const t = normalizeWords(target);
+  const s = normalizeWords(spoken);
+  if (t.length === 0) return false;
+  if (s.length === 0) return true;
+  const threshold = similarityThresholdFor(level);
+  const lastTarget = t.slice(-Math.min(2, t.length));
+  const lastSpoken = s.slice(-4);
+  return !lastTarget.some((tw) => lastSpoken.some((sw) => areWordsSimilar(tw, sw, threshold)));
+}
+
+/**
  * Calcule la pénalité de points perdus lors d'une manche.
  * Formule : errors × (5 + max(0, level - 4)) + (overTime ? 10 : 0) :
  * une erreur coûte 5 pts jusqu'au niveau 4, puis 6 au niveau 5 … 11 au niveau 10.
